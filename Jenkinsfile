@@ -3,6 +3,13 @@ pipeline {
 
     stages {
 
+        stage('Test') {
+            steps {
+                sh 'test -f index.html'
+                echo 'Test passed: index.html exists'
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
                 sh 'docker build -t devops-cicd-demo .'
