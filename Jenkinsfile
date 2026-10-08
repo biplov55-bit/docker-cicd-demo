@@ -5,7 +5,7 @@ pipeline {
 
         stage('Test') {
             steps {
-sh 'grep -q "THIS-DOES-NOT-EXIST" index.html'
+sh 'grep -q "CI/CD" index.html'
 echo 'Test passed: CI/CD text found'            }
         }
 
