@@ -5,9 +5,8 @@ pipeline {
 
         stage('Test') {
             steps {
-                sh 'test -f index.html'
-                echo 'Test passed: index.html exists'
-            }
+sh 'grep -q "CI/CD" index.html'
+echo 'Test passed: CI/CD text found'            }
         }
 
         stage('Build Docker Image') {
