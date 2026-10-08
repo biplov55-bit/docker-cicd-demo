@@ -11,8 +11,7 @@ echo 'Test passed: CI/CD text found'            }
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t devops-cicd-demo .'
-            }
+      sh 'docker build -t devops-cicd-demo:${BUILD_NUMBER} .'            }
         }
 
         stage('Run Docker Container') {
@@ -23,8 +22,8 @@ echo 'Test passed: CI/CD text found'            }
                     docker run -d \
                         --name devops-cicd-demo-container \
                         -p 8082:80 \
-                        devops-cicd-demo:latest
-                '''
+devops-cicd-demo:${BUILD_NUMBER}
+                 '''
             }
         }
 
