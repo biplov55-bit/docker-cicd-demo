@@ -53,5 +53,24 @@ pipeline {
                 }
             }
         }
+
+        stage('Health Check') {
+            steps {
+                sh '''
+                    for i in $(seq 1 10); do
+                        if curl --fail --silent http://localhost:8082; then
+                            echo "Health check passed!"
+                            exit 0
+                        fi
+                        echo "Waiting for application..."
+                        sleep 3
+                    done
+
+                    echo "Health check failed!"
+                    exit 1
+                '''
+            }
+        }
     }
-}
+}     
+    
