@@ -26,7 +26,7 @@ stage('Health Check') {
 steps {
 sh '''
 set -e
-curl --fail --silent http://localhost:8080 -o response.html
+curl --fail --silent http://localhost:8082 -o response.html
  if grep -q "CI/CD" response.html; then
  echo 'health check passed'
 else
