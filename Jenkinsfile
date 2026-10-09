@@ -54,23 +54,29 @@ pipeline {
             }
         }
 
+
         stage('Health Check') {
             steps {
                 sh '''
+                    echo "Checking application health..."
+
                     for i in $(seq 1 10); do
-                        if curl --fail --silent http://localhost:8082; then
-                            echo "Health check passed!"
+                        if curl --fail --silent http://localhost:8082 \
+                            | grep -q "CI/CD"; then
+                            echo "Health check passed: Correct content found!"
                             exit 0
                         fi
-                        echo "Waiting for application..."
+
+                        echo "Waiting for correct content..."
                         sleep 3
                     done
 
-                    echo "Health check failed!"
+                    echo "Health check failed: Expected content not found!"
                     exit 1
                 '''
             }
         }
+
     }
 }     
     
