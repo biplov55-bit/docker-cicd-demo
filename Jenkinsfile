@@ -1,89 +1,40 @@
-
 pipeline {
-    agent any
+agent any
 
-    parameters {
-        string(
-            name: 'DEPLOY_VERSION',
-            defaultValue: '',
-            description: 'Docker image version to deploy; leave blank to deploy this build'
-        )
-    }
-
-    stages {
-
-        stage('Test') {
-            steps {
-                sh 'grep -q "CI/CD" index.html'
-                echo 'Test passed: CI/CD text found'
-            }
-        }
-
-        stage('Build Docker Image') {
-            steps {
-                sh 'docker build -t devops-cicd-demo:${BUILD_NUMBER} .'
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                script {
-                    def version = params.DEPLOY_VERSION?.trim()
-
-                    if (!version) {
-                        version = env.BUILD_NUMBER
-                    }
-
-                    if (!(version ==~ /^[0-9]+$/)) {
-                        error('DEPLOY_VERSION must contain only digits')
-                    }
-
-                    sh """
-                        docker image inspect devops-cicd-demo:${version} >/dev/null
-
-                        docker rm -f devops-cicd-demo-container || true
-
-                        docker run -d \
-                            --name devops-cicd-demo-container \
-                            -p 8082:80 \
-                            devops-cicd-demo:${version}
-                    """
-
-                    echo "Deployed Docker image version: ${version}"
-                }
-            }
-        }
-
-
-
-stage('Health Check') {
-    steps {
-        sh '''
-            echo "Checking application health..."
-
-            for i in $(seq 1 10); do
-                if curl --fail --silent http://localhost:8082 \
-                    -o response.html; then
-
-                    echo "Website HTML response:"
-                    cat response.html
-
-                    if grep -q "CI/CD" response.html; then
-                        echo "Health check passed: Correct content found!"
-                        exit 0
-                    fi
-                fi
-
-                echo "Waiting for correct content..."
-                sleep 3
-            done
-
-            echo "Health check failed: Expected content not found!"
-            exit 1
-        '''
-    }
+stages {
+stage ('Best') {
+steps {
+sh 'grep -q "CI/CD" index.html'
+}
+}
+ stage ('Build') {
+ steps {
+sh 'docker build -t website:${BUILD_NUMBER} .'
+}
 }
 
-    }
-}     
-    
+stage('Deploy') {
+steps {
+sh '''
+docker rm -f website-container || true
+docker run -d --name website-container -p 8080:80 website:${BUILD_NUMBER}
+'''
+}
+}
+
+stage('Health Check') {
+steps {
+sh '''
+set -e
+curl --fail --silent http://localhost:8080 -o response.html
+ if grep -q "CI/CD" response.html; then
+ echo 'health check passed'
+else
+echo 'health check failed'
+exit 1
+fi
+'''
+}
+}
+}
+}
