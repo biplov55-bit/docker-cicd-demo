@@ -17,7 +17,7 @@ stage('Deploy') {
 steps {
 sh '''
 docker rm -f website-container || true
-docker run -d --name website-container -p 8083:80 website:${BUILD_NUMBER}
+docker run -d --name website-container -p 8082:80 website:${BUILD_NUMBER}
 '''
 }
 }
